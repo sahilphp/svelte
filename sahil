@@ -1,0 +1,31 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+/**
+ * `php sahil <command>` convenience wrapper around bin/sahil.
+ */
+
+$script = __DIR__.'/bin/sahil';
+
+if (!is_file($script)) {
+    fwrite(STDERR, "sahil: bin/sahil is missing from this project.\n");
+    exit(1);
+}
+
+$arguments = array_slice($argv, 1);
+
+if (function_exists('pcntl_exec')) {
+    pcntl_exec(PHP_BINARY, array_merge([$script], $arguments));
+}
+
+$command = escapeshellarg(PHP_BINARY).' '.escapeshellarg($script);
+
+foreach ($arguments as $argument) {
+    $command .= ' '.escapeshellarg($argument);
+}
+
+passthru($command, $exitCode);
+
+exit((int) $exitCode);

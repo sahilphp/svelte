@@ -1,0 +1,31 @@
+{
+    "name": "sahilphp-starter-kit-svelte",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "description": "SahilPHP starter-kit for Svelte 5 and TypeScript",
+    "license": "MIT",
+    "engines": {
+        "node": ">=18.0.0"
+    },
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "check": "svelte-check --tsconfig ./tsconfig.json",
+        "type-check": "svelte-check --tsconfig ./tsconfig.json",
+        "test": "vitest run",
+        "test:watch": "vitest"
+    },
+    "dependencies": {
+        "svelte": "^5.57.3"
+    },
+    "devDependencies": {
+        "@sveltejs/vite-plugin-svelte": "^5.1.1",
+        "@types/node": "^22.10.0",
+        "svelte-check": "^4.7.7",
+        "typescript": "^5.7.2",
+        "vite": "^6.4.5",
+        "vitest": "^3.2.4"
+    }
+}

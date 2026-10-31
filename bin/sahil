@@ -1,0 +1,195 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+/**
+ * Small project CLI for the Svelte starter-kit.
+ *
+ * Commands:
+ *   php bin/sahil about           Application name, environment and PHP.
+ *   php bin/sahil key:generate    Write APP_KEY to .env (--force replaces it).
+ *   php bin/sahil storage:prepare Create writable storage directories.
+ *   php bin/sahil start           Start PHP's development server.
+ *   php bin/sahil --version       Print PHP and framework versions.
+ */
+
+use App\Support\EnvironmentFile;
+use Sahil\Encryption\KeyGenerator;
+use Sahil\Foundation\Application;
+
+if (PHP_SAPI !== 'cli') {
+    fwrite(STDERR, "This binary must be run from the command line.\n");
+    exit(1);
+}
+
+$root = dirname(__DIR__);
+$command = $argv[1] ?? '--help';
+$args = array_slice($argv, 2);
+
+$help = <<<TEXT
+SahilPHP Svelte starter-kit
+
+Usage: php sahil <command>
+
+Commands:
+  about             Show application information.
+  key:generate      Write a new APP_KEY to .env (--force replaces one).
+  storage:prepare   Create writable storage directories.
+  start             Run the PHP development server.
+                    Options: --host=127.0.0.1 --port=8000
+
+Frontend:
+  npm run dev       Start Vite (http://127.0.0.1:5173).
+  npm run build     Build production assets into public/build.
+  npm run check     Run svelte-check.
+  npm test          Run JavaScript tests.
+
+TEXT;
+
+if ($command === '--help' || $command === '-h' || $command === 'help') {
+    fwrite(STDOUT, $help);
+    exit(0);
+}
+
+if ($command === '--version' || $command === '-V') {
+    fwrite(STDOUT, sprintf("SahilPHP Svelte starter-kit, PHP %s\n", PHP_VERSION));
+    exit(0);
+}
+
+require_once $root.'/vendor/autoload.php';
+
+if ($command === 'key:generate') {
+    $force = in_array('--force', $args, true);
+    $file = new EnvironmentFile($root.'/.env');
+
+    if (!$file->exists() && is_file($root.'/.env.example')) {
+        if (!@copy($root.'/.env.example', $root.'/.env')) {
+            fwrite(STDERR, "key:generate: unable to create .env from .env.example.\n");
+            exit(1);
+        }
+    }
+
+    $existing = $file->get('APP_KEY');
+
+    if ($existing !== null && trim($existing) !== '' && !$force) {
+        fwrite(STDERR, "key:generate: APP_KEY is already set; pass --force to replace it.\n");
+        exit(1);
+    }
+
+    try {
+        $written = $file->set('APP_KEY', KeyGenerator::generate());
+    } catch (Throwable $failure) {
+        fwrite(STDERR, 'key:generate: '.$failure->getMessage()."\n");
+        exit(1);
+    }
+
+    fwrite(STDOUT, "APP_KEY written to {$written}\n");
+    exit(0);
+}
+
+if ($command === 'storage:prepare') {
+    $directories = [
+        'storage/framework/views',
+        'storage/framework/sessions',
+        'storage/framework/cache',
+        'storage/logs',
+    ];
+    $created = 0;
+
+    foreach ($directories as $directory) {
+        $path = $root.'/'.$directory;
+
+        if (is_dir($path)) {
+            continue;
+        }
+
+        if (!@mkdir($path, 0o775, true) && !is_dir($path)) {
+            fwrite(STDERR, sprintf("storage:prepare: unable to create %s\n", $directory));
+            exit(1);
+        }
+
+        $created++;
+        fwrite(STDOUT, "created {$directory}/\n");
+    }
+
+    fwrite(STDOUT, $created === 0 ? "storage: ready.\n" : "storage: ready.\n");
+    exit(0);
+}
+
+if ($command === 'start' || $command === 'serve') {
+    $host = '127.0.0.1';
+    $port = 8000;
+
+    foreach ($args as $argument) {
+        if (str_starts_with($argument, '--host=')) {
+            $host = substr($argument, 7);
+        } elseif (str_starts_with($argument, '--port=')) {
+            $port = (int) substr($argument, 7);
+        }
+    }
+
+    if ($port < 1 || $port > 65535) {
+        fwrite(STDERR, "start: invalid port; use a number between 1 and 65535.\n");
+        exit(1);
+    }
+
+    $bind = $host.':'.$port;
+    $probe = @stream_socket_server('tcp://'.$bind);
+
+    if ($probe === false) {
+        $free = null;
+
+        for ($candidate = $port + 1; $candidate <= min(65535, $port + 100); $candidate++) {
+            $socket = @stream_socket_server('tcp://'.$host.':'.$candidate);
+
+            if ($socket !== false) {
+                fclose($socket);
+                $free = $candidate;
+                break;
+            }
+        }
+
+        if ($free === null) {
+            fwrite(STDERR, "start: {$bind} is already in use and no free port was found nearby.\n");
+            exit(1);
+        }
+
+        fwrite(STDOUT, "start: {$bind} is in use; using {$host}:{$free} instead.\n");
+        $port = $free;
+        $bind = $host.':'.$port;
+    } else {
+        fclose($probe);
+    }
+
+    fwrite(STDOUT, "SahilPHP development server\n  http://{$bind}\n  document root: {$root}/public\n\n");
+    fflush(STDOUT);
+
+    $serverArgs = ['-S', $bind, '-t', $root.'/public', $root.'/public/index.php'];
+
+    if (function_exists('pcntl_exec')) {
+        pcntl_exec(PHP_BINARY, $serverArgs);
+    }
+
+    passthru(escapeshellarg(PHP_BINARY).' '.implode(' ', array_map('escapeshellarg', $serverArgs)), $code);
+    exit((int) $code);
+}
+
+if ($command === 'about') {
+    try {
+        require_once $root.'/bootstrap/app.php';
+        $application = sahil_bootstrap();
+    } catch (Throwable $failure) {
+        fwrite(STDERR, 'Boot error: '.$failure->getMessage()."\n");
+        exit(1);
+    }
+
+    fwrite(STDOUT, sprintf("Application: %s\n", (string) $application->config()->get('app.name', 'SahilPHP')));
+    fwrite(STDOUT, sprintf("Environment: %s\n", (string) $application->config()->get('app.environment', 'development')));
+    fwrite(STDOUT, sprintf("Debug: %s\n", $application->config()->get('app.debug') === true ? 'true' : 'false'));
+    fwrite(STDOUT, sprintf("PHP: %s\n", PHP_VERSION));
+    exit(0);
+}
+
+fwrite(STDERR, "Unknown command [{$command}]. Run `php sahil --help`.\n");
+exit(1);
