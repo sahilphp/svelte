@@ -1,5 +1,5 @@
 {
-    "name": "sahilphp/starter-kit-svelte",
+    "name": "sahilphp/svelte",
     "description": "SahilPHP starter-kit for Svelte 5 and TypeScript projects",
     "type": "project",
     "license": "MIT",
