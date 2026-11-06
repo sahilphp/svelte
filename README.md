@@ -11,10 +11,24 @@ data; Vite handles development HMR and production builds.
 - Node.js 18+
 - npm 9+
 
-## Create or install
+## Installation
+
+> [!WARNING]
+> This package is a **library**, not a project skeleton.
+> `composer create-project sahilphp/svelte` fails by design.
+> Create a project with `sahilphp new my-app` and choose **Svelte** during
+> setup; the installer wires Svelte, Vite and your CSS framework together.
+>
+> Install it as a dependency with:
+>
+> ```bash
+> composer require sahilphp/svelte
+> ```
+
+Create a new application with the installer:
 
 ```bash
-composer create-project sahilphp/starter-kit-svelte my-app
+sahilphp new my-app --ui-kit=svelte --css=tailwind
 cd my-app
 npm install
 ```

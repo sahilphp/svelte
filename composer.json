@@ -1,19 +1,18 @@
 {
     "name": "sahilphp/svelte",
-    "description": "SahilPHP starter-kit for Svelte 5 and TypeScript projects",
-    "type": "project",
+    "description": "Svelte UI integration for SahilPHP applications.",
+    "type": "library",
     "license": "MIT",
     "keywords": [
         "sahilphp",
-        "starter-kit",
         "svelte",
         "typescript",
         "vite"
     ],
-    "homepage": "https://github.com/sahilphp/starter-kit-svelte",
+    "homepage": "https://github.com/sahilphp/svelte",
     "support": {
-        "issues": "https://github.com/sahilphp/starter-kit-svelte/issues",
-        "source": "https://github.com/sahilphp/starter-kit-svelte"
+        "issues": "https://github.com/sahilphp/svelte/issues",
+        "source": "https://github.com/sahilphp/svelte"
     },
     "require": {
         "php": "^8.2",
@@ -33,12 +32,9 @@
         }
     },
     "scripts": {
-        "start": "@php sahil start",
         "test": "phpunit --configuration phpunit.xml --colors=always",
         "post-create-project-cmd": [
-            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
-            "@php bin/sahil key:generate",
-            "@php bin/sahil storage:prepare"
+            "@php scripts/refuse-create-project.php"
         ]
     },
     "config": {
