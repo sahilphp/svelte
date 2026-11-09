@@ -38,7 +38,7 @@ For a checkout that already exists:
 ```bash
 composer install
 cp .env.example .env
-php bin/sahil key:generate
+php sahil key:generate
 npm install
 ```
 

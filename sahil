@@ -4,28 +4,19 @@
 declare(strict_types=1);
 
 /**
- * `php sahil <command>` convenience wrapper around bin/sahil.
+ * SahilPHP public entry point.
+ *
+ * This file only loads Composer and delegates to the framework console. The
+ * command implementations live in the installed `sahilphp/framework` package.
  */
 
-$script = __DIR__.'/bin/sahil';
+$autoload = __DIR__.'/vendor/autoload.php';
 
-if (!is_file($script)) {
-    fwrite(STDERR, "sahil: bin/sahil is missing from this project.\n");
+if (!is_file($autoload)) {
+    fwrite(STDERR, 'SahilPHP: vendor/autoload.php is missing. Run `composer install` first.'.PHP_EOL);
     exit(1);
 }
 
-$arguments = array_slice($argv, 1);
+require $autoload;
 
-if (function_exists('pcntl_exec')) {
-    pcntl_exec(PHP_BINARY, array_merge([$script], $arguments));
-}
-
-$command = escapeshellarg(PHP_BINARY).' '.escapeshellarg($script);
-
-foreach ($arguments as $argument) {
-    $command .= ' '.escapeshellarg($argument);
-}
-
-passthru($command, $exitCode);
-
-exit((int) $exitCode);
+exit((new Sahil\Console\Application(__DIR__))->run(array_values(array_slice($argv, 1))));
