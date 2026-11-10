@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4dcd753d565195bfba92f1bc2f1caceb",
+    "content-hash": "480e6122aa7f656678681412f456e169",
     "packages": [
         {
             "name": "doctrine/lexer",
@@ -303,16 +303,16 @@
         },
         {
             "name": "sahilphp/framework",
-            "version": "v1.0.4",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sahilphp/framework.git",
-                "reference": "e98915a432ec242da286e78ad6a40bac8e280840"
+                "reference": "39f05d716ab71152e191869640f964a2ace15171"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sahilphp/framework/zipball/e98915a432ec242da286e78ad6a40bac8e280840",
-                "reference": "e98915a432ec242da286e78ad6a40bac8e280840",
+                "url": "https://api.github.com/repos/sahilphp/framework/zipball/39f05d716ab71152e191869640f964a2ace15171",
+                "reference": "39f05d716ab71152e191869640f964a2ace15171",
                 "shasum": ""
             },
             "require": {
@@ -361,7 +361,7 @@
                 "issues": "https://github.com/sahilphp/framework/issues",
                 "source": "https://github.com/sahilphp/framework"
             },
-            "time": "2026-10-30T00:40:08+00:00"
+            "time": "2026-11-09T16:39:21+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
