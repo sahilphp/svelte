@@ -10,7 +10,7 @@ use Sahil\Contracts\Foundation\ApplicationContract;
 use Sahil\Foundation\ServiceProvider;
 use Sahil\Http\Kernel;
 use Sahil\Http\Middleware\RequestIdMiddleware;
-use Sahil\Http\Route;
+use Sahil\Routing\Link;
 use Sahil\Http\Router;
 
 /**
@@ -54,13 +54,13 @@ final class WebRoutesProvider extends ServiceProvider
         $definitions = require $file;
 
         if (!is_array($definitions)) {
-            throw new RuntimeException('routes/web.php must return an array of Sahil\Http\Route objects.');
+            throw new RuntimeException('routes/web.php must return an array of Sahil\Routing\Link objects.');
         }
 
         foreach ($definitions as $definition) {
-            if (!$definition instanceof Route) {
+            if (!$definition instanceof Link) {
                 throw new RuntimeException(sprintf(
-                    'routes/web.php must return Sahil\Http\Route entries, got %s.',
+                    'routes/web.php must return Sahil\Routing\Link entries, got %s.',
                     get_debug_type($definition),
                 ));
             }

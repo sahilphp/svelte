@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Frontend\SvelteAdapter;
 use App\Frontend\SvelteAssets;
 use App\Frontend\SvelteConfiguration;
 use App\Frontend\SvelteRenderer;
@@ -53,5 +54,14 @@ final class FrontendServiceProvider extends ServiceProvider
         });
 
         $container->alias('svelte', SvelteRenderer::class);
+
+        // Unified rendering: native `html` plus this kit's `svelte` adapter.
+        $container->singleton(
+            \Sahil\Rendering\RenderManager::class,
+            static fn (Container $container): \Sahil\Rendering\RenderManager => new \Sahil\Rendering\RenderManager([
+                new \Sahil\Rendering\Adapters\HtmlAdapter($container->make(\Sahil\Contracts\View\ViewContract::class)),
+                new SvelteAdapter($container->make(SvelteRenderer::class)),
+            ]),
+        );
     }
 }

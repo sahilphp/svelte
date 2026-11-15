@@ -7,7 +7,7 @@ use App\Http\FormController;
 use App\Http\HealthController;
 use App\Http\HomeController;
 use App\Http\NotFoundController;
-use Sahil\Http\Route;
+use Sahil\Routing\Link;
 
 /**
  * HTTP route table for the Svelte starter-kit.
@@ -16,10 +16,10 @@ use Sahil\Http\Route;
  * order, and it renders a Svelte 404 with a real 404 status for unknown paths.
  */
 return [
-    Route::get('/health', [HealthController::class, 'response'])->name('health'),
-    Route::get('/', [HomeController::class, 'response'])->name('home'),
-    Route::get('/example', [ExampleController::class, 'response'])->name('example'),
-    Route::get('/form', [FormController::class, 'show'])->name('form.show'),
-    Route::post('/form', [FormController::class, 'submit'])->name('form.submit'),
-    Route::get('/{path:.*}', [NotFoundController::class, 'response'])->name('not-found'),
+    Link::get('/health', [HealthController::class, 'response'])->name('health'),
+    Link::get('/', [HomeController::class, 'response'])->name('home'),
+    Link::get('/example', [ExampleController::class, 'response'])->name('example'),
+    Link::get('/form', [FormController::class, 'show'])->name('form.show'),
+    Link::post('/form', [FormController::class, 'submit'])->name('form.submit'),
+    Link::get('/{path:.*}', [NotFoundController::class, 'response'])->name('not-found'),
 ];
