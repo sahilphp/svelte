@@ -39,7 +39,6 @@ final class SvelteDocument
         $head = [
             '<meta charset="utf-8">',
             '<meta name="viewport" content="width=device-width, initial-scale=1">',
-            '<meta name="generator" content="SahilPHP">',
         ];
 
         foreach ($this->assets->styles() as $href) {

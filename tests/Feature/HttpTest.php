@@ -166,6 +166,32 @@ final class HttpTest extends ApplicationTestCase
         self::assertFileExists(dirname(__DIR__, 2).'/public/favicon.svg');
     }
 
+    public function test_framework_identification_fingerprint_is_served(): void
+    {
+        $response = $this->get('/');
+
+        $response
+            ->assertHeader('X-Powered-By', 'SahilPHP')
+            ->assertSee('name="generator"');
+
+        self::assertMatchesRegularExpression(
+            '/<meta name="generator" content="SahilPHP(?: \d+\.\d+(?:\.\d+)?[^"]*)?">/',
+            $response->body,
+        );
+        self::assertSame(1, substr_count($response->body, 'name="generator"'));
+    }
+
+    public function test_identification_can_be_disabled_via_configuration(): void
+    {
+        $this->app()->config()->set('identification.enabled', false);
+
+        $response = $this->get('/');
+
+        $response
+            ->assertHeaderMissing('X-Powered-By')
+            ->assertDontSee('name="generator"');
+    }
+
     /**
      * @return array<string, mixed>
      */
